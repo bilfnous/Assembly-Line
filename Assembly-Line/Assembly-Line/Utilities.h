@@ -12,7 +12,7 @@
 namespace sict {
 	
 	class Utilities {
-		size_t m_fieldWidth; 
+		static size_t m_fieldWidth; 
 		static char m_delimiter; //???	
 
 	public:
