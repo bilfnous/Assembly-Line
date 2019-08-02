@@ -146,6 +146,7 @@
     <ClCompile Include="AssemblyLine.cpp" />
     <ClCompile Include="CustomerOrder.cpp" />
     <ClCompile Include="ItemSet.cpp" />
+    <ClCompile Include="LineManager.cpp" />
     <ClCompile Include="Project.cpp" />
     <ClCompile Include="Station.cpp" />
     <ClCompile Include="Utilities.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="AssemblyLine.h" />
     <ClInclude Include="CustomerOrder.h" />
     <ClInclude Include="ItemSet.h" />
+    <ClInclude Include="LineManager.h" />
     <ClInclude Include="Station.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
