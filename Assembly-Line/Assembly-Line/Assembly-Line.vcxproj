@@ -144,13 +144,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyLine.cpp" />
+    <ClCompile Include="CustomerOrder.cpp" />
     <ClCompile Include="ItemSet.cpp" />
     <ClCompile Include="Project.cpp" />
+    <ClCompile Include="Station.cpp" />
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssemblyLine.h" />
+    <ClInclude Include="CustomerOrder.h" />
     <ClInclude Include="ItemSet.h" />
+    <ClInclude Include="Station.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
