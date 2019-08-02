@@ -15,7 +15,8 @@ namespace sict {
 	// constructor stores file addresses
 	//
 	AssemblyLine::AssemblyLine(char* filename[], int nFiles) :
-		fInventory(nFiles > 0 ? filename[0] : nullptr) {
+		fInventory(nFiles > 0 ? filename[0] : nullptr),
+		fOrders(nFiles > 1 ? filename[1] : nullptr) {
 		if (nFiles < 1) throw std::string("*** Insufficient command line arguments ***\n");
 	}
 
@@ -46,4 +47,46 @@ namespace sict {
 		os << " getQuantity(): " << inventory[T].getQuantity() << std::endl;
 	}
 
+	// loads customer orders and validates them
+	//
+	void AssemblyLine::loadOrders(std::ostream& os)
+	{
+		if (inventory.empty()) loadInventory(os);
+		std::ifstream file(fOrders);
+		if (!file) throw std::string("*** Unable to open Customer Orders file ") + std::string(fOrders);
+		std::string record;
+		while (!file.eof()) {
+			std::getline(file, record);
+			orders.push_back(std::move(CustomerOrder(record)));
+		}
+		file.close();
+		os << "\nCustomer Orders\n";
+		os << "---------------\n";
+		for (size_t i = 0; i < orders.size(); i++)
+			orders[i].display(os);
+
+		os << "\nFor Manual Validation" << std::endl;
+		orders[orders.size() - 1].display(os);
+		CustomerOrder tmp(std::move(orders[orders.size() - 1]));
+		orders.pop_back();
+		tmp.display(os);
+		os << std::endl;
+
+		std::string strRecord = "Chloe|Flight PC|CPU|GPU|Power Supply";
+		CustomerOrder tmp2(strRecord);
+		tmp2.display(os);
+		tmp2 = std::move(orders[orders.size() - 1]);
+		orders.pop_back();
+		tmp2.display(os);
+
+		os << "\nFor Manual Validation Filling" << std::endl;
+		tmp2.display(os);
+		os << " isFilled(): " << (tmp2.isFilled() ? "true" : "false") << std::endl;
+		tmp2.fillItem(inventory[T], os);
+		os << " isFilled(): " << (tmp2.isFilled() ? "true" : "false") << std::endl;
+
+		for (size_t i = 0; i < inventory.size(); i++)
+			tmp2.fillItem(inventory[i], os);
+		os << " isFilled(): " << (tmp2.isFilled() ? "true" : "false") << std::endl;
+	}
 }
