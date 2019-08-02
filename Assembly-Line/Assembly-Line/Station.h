@@ -24,7 +24,7 @@ namespace sict {
 		ItemSet m_stationInventory;
 
 	public:
-		explicit Station(const std::string&);
+		Station(const std::string&);
 		Station(const Station&) = delete;
 		Station& operator=(const Station&) = delete;
 		Station(Station&&) = delete;
