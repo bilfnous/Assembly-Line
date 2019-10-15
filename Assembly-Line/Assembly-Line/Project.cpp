@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
 			a.loadInventory(os);
 			os << "\nInventory Assembly Complete\n";
 		}
+
 		else if (argc == 3) {
 			os << "Customer Order Assembly\n";
 			os << "=======================\n";
@@ -45,6 +46,7 @@ int main(int argc, char *argv[])
 			a.loadOrders(os);
 			os << "\nCustomer Order Assembly Complete\n";
 		}
+
 		else {
 			os << "Assembly Line Configuration and Order Processing\n";
 			os << "================================================\n";
@@ -52,6 +54,7 @@ int main(int argc, char *argv[])
 			a.run(os);
 			os << "\nAssembly Line Configuration and Processing Complete\n";
 		}
+
 	}
 	catch (const std::string& str) {
 		std::cerr << str << std::endl;

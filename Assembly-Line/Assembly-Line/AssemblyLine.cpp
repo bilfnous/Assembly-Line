@@ -52,8 +52,8 @@ namespace sict {
 		os << " getQuantity(): " << inventory[T].getQuantity() << std::endl;
 	}
 
+
 	// load customer orders and validats them
-	//
 	void AssemblyLine::loadOrders(std::ostream& os)
 	{
 		if (inventory.empty()) loadInventory(os);
@@ -94,9 +94,8 @@ namespace sict {
 			tmp2.fillItem(inventory[i], os);
 		os << " isFilled(): " << (tmp2.isFilled() ? "true" : "false") << std::endl;
 	}
-
+  
 	// configure the assembly line and validate the configuration
-	//
 	void AssemblyLine::configureLine(std::ostream& os)
 	{
 		std::ifstream file;
