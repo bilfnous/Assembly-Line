@@ -16,26 +16,44 @@
 
 namespace sict {
 
+	// all ItemSet objects have common field widths
+	// name field width is that of larger name
+	unsigned int ItemSet::m_fieldwidth{0u};
+	const unsigned int CODE_WIDTH = 5;
+	const unsigned int QUAN_WIDTH = 3;
+
 	/*
 		A constructor that receives a reference to an unmodifiable string, 
 		extracts 4 tokens from the string, populates the object with those tokens 
 		and determines the field width to be used in displaying data for all objects of the class.
 	*/
 	ItemSet::ItemSet(const std::string& record) {
-		//size_t next_pos = record.find(mo_utility.getDelimiter());
-		//m_name = record.substr(0, next_pos);
-
 		size_t next_pos = 0;
-		m_name = mo_utility.extractToken(record, next_pos);
-		m_serialNumber = std::stoul(mo_utility.extractToken(record, next_pos));	// extract token and convert from string to ulong
-		m_quantity = std::stoi(mo_utility.extractToken(record, next_pos));
-		m_description = mo_utility.extractToken(record, next_pos);
 
-		// update the utility fieldWidth with the largest name's length
-		if (mo_utility.getFieldWidth() < m_name.length())
-			mo_utility.setFieldWidth(m_name.length());
+		if (!record.empty()) {
+			m_name = mo_utility.extractToken(record, next_pos);
+
+			if (m_fieldwidth < mo_utility.getFieldWidth()) {
+				m_fieldwidth = (unsigned int)mo_utility.getFieldWidth();
+			}
+
+			if (next_pos != std::string::npos) {
+				std::string tmp = mo_utility.extractToken(record, next_pos);
+				m_serialNumber = atoi(tmp.c_str());
+			}
+
+			if (next_pos != std::string::npos) {
+				std::string tmp = mo_utility.extractToken(record, next_pos);
+				m_quantity = atoi(tmp.c_str());
+			}
+
+			if (next_pos != std::string::npos) {
+				m_description = mo_utility.extractToken(record, next_pos);
+			}
+		}
 	}
 
+	
 	ItemSet::ItemSet(ItemSet && other) {
 		if (this != &other)	{
 			m_name = other.m_name;
@@ -77,9 +95,10 @@ namespace sict {
 		stock by one and increases the serial number by one.
 	*/
 	ItemSet& ItemSet::operator--() {
-		m_quantity--;
-		m_serialNumber++;
-
+		if (m_quantity > 0) {
+			m_quantity--;
+			m_serialNumber++;
+		}
 		return *this;
 	}
 
@@ -95,10 +114,16 @@ namespace sict {
 		Fields are separated by a single blank character.
 	*/
 	void ItemSet::display(std::ostream& os, bool full) const {
-		size_t fw = mo_utility.getFieldWidth();
+		os << std::setw(m_fieldwidth) << std::setfill(' ') << std::left << m_name
+			<< " "
+			<< "[" << std::setw(CODE_WIDTH) << std::setfill('0') << std::right << m_serialNumber << "]";
 
-		if (full)
-			os << std::left << std::setw(fw) << m_name << " [" << std::setw(5) << m_serialNumber << "] Quantity " << std::setw(3) << m_quantity << std::right << " Description: " << m_description << std::endl;
+		if (full) {
+			os << " " << "Quantity " << std::setw(QUAN_WIDTH) << std::setfill(' ') << std::left << m_quantity
+				<< " Description: " << m_description;
+		}
+
+		os << std::endl;
 	}
 
 }

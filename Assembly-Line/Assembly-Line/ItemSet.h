@@ -15,16 +15,16 @@
 namespace sict {
 
 	class ItemSet {
-		
-		std::string m_name;
+		std::string m_name = "";
 		std::string m_description;
-		unsigned int m_serialNumber;
-		unsigned int m_quantity;
+		unsigned int m_serialNumber{ 0u };
+		unsigned int m_quantity{ 0u };
+		static unsigned int m_fieldwidth;
 		Utilities mo_utility;
 
 	public:
 		ItemSet(const std::string&);
-		ItemSet(ItemSet&&);
+		ItemSet(ItemSet&&); //???
 		ItemSet(const ItemSet&) = delete;
 		ItemSet& operator=(const ItemSet&) = delete;
 		ItemSet& operator=(ItemSet&&) = delete;
@@ -34,7 +34,6 @@ namespace sict {
 		ItemSet& operator--();
 		void display(std::ostream& os, bool full = true) const;
 	};
-
 }
 
 #endif
