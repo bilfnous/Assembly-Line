@@ -115,15 +115,23 @@ namespace sict {
 	}
 
 	std::string CustomerOrder::getNameProduct() const {
-		return std::string(m_customerName) + "[" + std::string(m_productName) + "]";
+		return m_customerName + " [" + m_productName + "]";
 	}
 
 	void CustomerOrder::display(std::ostream & os, bool showDetail) const {
-		os << std::left << std::setw(m_fieldWidth) << m_customerName << " [" << m_productName << "]" << std::endl;
-		if (!showDetail) {
+		os << std::setw(m_fieldWidth) << m_customerName << " [" << m_productName << "]" << std::endl;
 
-			for (size_t i = 0; i < m_itemsNum; i++) {
-				os << std::setfill(' ') << std::setw(m_fieldWidth + 1) << "    " << std::right << m_itemInfo[i].s_name << std::endl;
+		// loop through the itemList and display all the information
+		for (unsigned int i = 0; i < m_itemsNum; i++) {
+			if (showDetail) {
+				os << std::setw(m_fieldWidth) << " " << " [" << ms_itemList[i]->s_serialNumer << "] " << ms_itemList[i]->s_itemName;
+				if (ms_itemList[i]->s_filled)
+					os << " - FILLED" << std::endl;
+				else
+					os << " - MISSING" << std::endl;
+			}
+			else {
+				os << std::setw(m_fieldWidth) << " " << ' ' << ms_itemList[i]->s_itemName << std::endl;
 			}
 		}
 	}

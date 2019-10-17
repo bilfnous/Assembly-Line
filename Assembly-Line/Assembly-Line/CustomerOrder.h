@@ -11,6 +11,7 @@
 
 #include <string>
 #include "ItemSet.h"
+#include "Utilities.h"
 
 namespace sict {
 	
@@ -28,7 +29,7 @@ namespace sict {
 
 		std::string m_customerName = "";
 		std::string m_productName = "";
-		unsigned int m_itemsNum;
+		unsigned int m_itemsNum{0u};
 		static unsigned int m_fieldWidth;
 		Utilities mo_utility;
 
