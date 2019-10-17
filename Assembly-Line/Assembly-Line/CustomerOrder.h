@@ -37,8 +37,8 @@ namespace sict {
 		CustomerOrder(const std::string&);
 		CustomerOrder(const CustomerOrder&) = delete;
 		CustomerOrder& operator=(const CustomerOrder&) = delete;
-		CustomerOrder(CustomerOrder&&);
-		CustomerOrder& operator=(CustomerOrder&&);
+		CustomerOrder(CustomerOrder&&) noexcept;
+		CustomerOrder& operator=(CustomerOrder&&) noexcept;
 		~CustomerOrder();
 		void fillItem(ItemSet& item, std::ostream& os);
 		bool isFilled() const;

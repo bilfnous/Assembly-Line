@@ -40,11 +40,11 @@ namespace sict {
 		}
 	}
 
-	CustomerOrder::CustomerOrder(CustomerOrder&& other) {
+	CustomerOrder::CustomerOrder(CustomerOrder&& other) noexcept {
 		*this = std::move(other);
 	}
 
-	CustomerOrder& CustomerOrder::operator=(CustomerOrder&& other) {
+	CustomerOrder& CustomerOrder::operator=(CustomerOrder&& other) noexcept {
 		if (this != &other) {
 			if (ms_itemList) {
 				for (unsigned int x = 0; x < m_itemsNum; ++x)
@@ -71,19 +71,23 @@ namespace sict {
 	}
 
 	void CustomerOrder::fillItem(ItemSet& item, std::ostream& os) {
-		for (size_t i = 0; i < m_itemsNum; i++) {
-			if (item.getName() == ms_itemList[i].s_name) {
-				if (item.getQuantity() == 0)
-					os << " Unable to fill " << m_customerName << " [" << m_productName << "][" << m_itemInfo[i].s_name << "][" << m_itemInfo[i].s_serialNumer << "] out of stock" << std::endl;
+		// Loop through the itemlist information and find the corresponding item
+		for (unsigned int i = 0; i < m_itemsNum; i++) {
+			if (ms_itemList[i]->s_itemName == item.getName()) {
+				if ((item.getQuantity() > 0) && (!ms_itemList[i]->s_filled)) {
+					ms_itemList[i]->s_serialNumer = item.getSerialNumber();
+					ms_itemList[i]->s_filled = true;
+					os << " Filled " << m_customerName << " [" << m_productName << "][" << ms_itemList[i]->s_itemName << "]" <<
+						"[" << ms_itemList[i]->s_serialNumer << "]" << std::endl;
+					--item;
+				}
+				else if (ms_itemList[i]->s_filled) {
+					os << " Unable to fill " << m_customerName << " [" << m_productName << "][" << ms_itemList[i]->s_itemName << "]" <<
+						"[" << ms_itemList[i]->s_serialNumer << "] already filled" << std::endl;
+				}
 				else {
-					if (m_itemInfo[i].s_filled)
-						os << " Unable to fill " << m_customerName << " [" << m_productName << "][" << m_itemInfo[i].s_name << "][" << m_itemInfo[i].s_serialNumer << "] already filled" << std::endl;
-					else {
-						m_itemInfo[i].s_serialNumer = item.getSerialNumber();
-						m_itemInfo[i].s_filled = true;
-						item.operator--();
-						os << " Filled " << m_customerName << " [" << m_productName << "][" << m_itemInfo[i].s_name << "][" << m_itemInfo[i].s_serialNumer << "]" << std::endl;
-					}
+					os << " Unable to fill " << m_customerName << " [" << m_productName << "][" << ms_itemList[i]->s_itemName << "]" <<
+						"[" << ms_itemList[i]->s_serialNumer << "] out of stock" << std::endl;
 				}
 			}
 		}
