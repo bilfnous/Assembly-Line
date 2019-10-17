@@ -19,12 +19,11 @@
 namespace sict {
 
 	char Utilities::m_delimiter = '\0';
-	size_t Utilities::m_fieldWidth = { 0 };
 	/*
 		A default constructor that places the object in a safe empty state and initializes 
 		its field width to a size that is less than the possible size of any token.
 	*/
-	Utilities::Utilities() {}
+	Utilities::Utilities() : m_fieldWidth(0){}
 
 	/*
 		- A modifier that receives a reference to an unmodifiable string str and a reference to a 
@@ -37,13 +36,34 @@ namespace sict {
 		- This function reports an exception if one delimiter follows another without any token between them.
 	*/
 	const std::string Utilities::extractToken(const std::string& str, size_t& next_pos) {
-		std::string token = str.substr(next_pos);;
-		size_t pos = token.find(m_delimiter);
-		if (pos != std::string::npos) {
-			token = token.substr(0, pos);
-			next_pos += pos + 1;
+		std::string token;
+
+		if (next_pos <= str.length()) {
+			// find and extract the next token
+			size_t location = str.find_first_of(m_delimiter, next_pos);
+			if (location != std::string::npos) {
+				token = str.substr(next_pos, location - next_pos);
+				next_pos = location + 1;
+			}
+			else {     
+				// the end of the line case
+				token = str.substr(next_pos);
+				next_pos = str.length() + 1;
+			}
+
+			if ((token.empty()) && (next_pos != str.length() + 1)) {
+				next_pos = std::string::npos;
+				throw str + "<-- ERROR:  Token Failure";
+			}
+
+			// update the field_width if its value is less than the size of the token extracted
+			if (m_fieldWidth < token.length())
+				m_fieldWidth = token.length();
+
+			if (!(next_pos <= str.length()))
+				next_pos = std::string::npos;
 		}
-					
+
 		return token;
 	}
 
