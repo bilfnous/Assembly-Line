@@ -12,31 +12,31 @@
 
 namespace sict {
 
-	size_t CustomerOrder::m_fieldWidth = 0;
-	
-	CustomerOrder::CustomerOrder() : m_itemInfo{ nullptr }, m_customerName{ "" }, m_productName{ "" }, m_itemsNum{ 0 } {}
+	unsigned int CustomerOrder::m_fieldWidth{0u};
 
-	CustomerOrder::CustomerOrder(const std::string& record) : CustomerOrder() {
-		Utilities utility;
+	CustomerOrder::CustomerOrder(const std::string& record) {
+		if (!record.empty()) {
+			size_t next_pos = 0;
 
-		size_t delimiter_pos = record.find(utility.getDelimiter());
-		m_customerName = record.substr(0, delimiter_pos);
+			m_customerName = mo_utility.extractToken(record, next_pos);
 
-		if (m_fieldWidth < utility.getFieldWidth())
-			m_fieldWidth = utility.getFieldWidth();
-		
-		delimiter_pos++;
-		m_productName = utility.extractToken(record, delimiter_pos);
+			if (m_fieldWidth < mo_utility.getFieldWidth()) {
+				m_fieldWidth = (unsigned int)mo_utility.getFieldWidth();
+			}
 
-		m_itemsNum = std::count(record.begin(), record.end(), utility.getDelimiter()) - 1;
-		m_itemInfo = new ItemInfo[m_itemsNum];
+			if (next_pos != std::string::npos) {
+				m_productName = mo_utility.extractToken(record, next_pos);
+			}
 
-		if (m_itemsNum >= 1) {
-			for (size_t i = 0; i < m_itemsNum; i++)
-				m_itemInfo[i].s_name = utility.extractToken(record, delimiter_pos);
-		}
-		else {
-			throw "*** No items have been requested to be added. ***";
+			// extracts the remainder of the record
+			std::string strItems = record.substr(next_pos, record.length() - next_pos);
+			m_itemsNum = (unsigned int)(std::count(strItems.begin(), strItems.end(), mo_utility.getDelimiter())) + 1;
+
+			// allocate memory for the item list for this order
+			ms_itemList = new ItemInfo * [m_itemsNum];
+			// store the item information for this order
+			for (unsigned int x = 0; (x < m_itemsNum) && (next_pos != std::string::npos); x++)
+				ms_itemList[x] = new ItemInfo(mo_utility.extractToken(record, next_pos));
 		}
 	}
 
@@ -46,23 +46,33 @@ namespace sict {
 
 	CustomerOrder& CustomerOrder::operator=(CustomerOrder&& other) {
 		if (this != &other) {
+			if (ms_itemList) {
+				for (unsigned int x = 0; x < m_itemsNum; ++x)
+					delete ms_itemList[x];
+				delete[] ms_itemList;
+			}
 			m_customerName = other.m_customerName;
 			m_productName = other.m_productName;
 			m_itemsNum = other.m_itemsNum;
-			m_itemInfo = other.m_itemInfo;
-			other.m_itemInfo = { nullptr };
+			m_fieldWidth = other.m_fieldWidth;
+			ms_itemList = other.ms_itemList;
+			other.ms_itemList = nullptr;
+			other.m_itemsNum = 0;
 		}
 		return *this;
 	}
 
 	CustomerOrder::~CustomerOrder() {
-		delete[] m_itemInfo;
-		m_itemInfo = { nullptr };
+		if (ms_itemList) {
+			for (unsigned int x = 0; x < m_itemsNum; ++x)
+				delete ms_itemList[x];
+			delete[] ms_itemList;
+		}
 	}
 
 	void CustomerOrder::fillItem(ItemSet& item, std::ostream& os) {
 		for (size_t i = 0; i < m_itemsNum; i++) {
-			if (item.getName() == m_itemInfo[i].s_name) {
+			if (item.getName() == ms_itemList[i].s_name) {
 				if (item.getQuantity() == 0)
 					os << " Unable to fill " << m_customerName << " [" << m_productName << "][" << m_itemInfo[i].s_name << "][" << m_itemInfo[i].s_serialNumer << "] out of stock" << std::endl;
 				else {
