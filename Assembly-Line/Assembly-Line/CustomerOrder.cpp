@@ -94,19 +94,23 @@ namespace sict {
 	}
 
 	bool CustomerOrder::isFilled() const {
-		for (size_t i = 0; i < m_itemsNum; ++i)
-			if (!m_itemInfo[i].s_filled)
-				return false;
-		return true;
+		bool fillStatus = true;
+
+		for (unsigned int i = 0; i < m_itemsNum; i++) {
+			if (!ms_itemList[i]->s_filled)
+				fillStatus = false;
+		}
+
+		return fillStatus;
 	}
 
 	bool CustomerOrder::isItemFilled(const std::string& itemName) const {
-		for (size_t i = 0; i < m_itemsNum; i++) {
-			if (m_itemInfo[i].s_name == itemName) {
-				if (!m_itemInfo->s_filled)
-					return false;
-			}
+		for (unsigned int x = 0; x < m_itemsNum; x++)
+		{
+			if (ms_itemList[x]->s_itemName == itemName && !ms_itemList[x]->s_filled)
+				return false;
 		}
+		// item not found, so consider it filled
 		return true;
 	}
 
