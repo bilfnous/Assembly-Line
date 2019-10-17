@@ -20,17 +20,17 @@ namespace sict {
 			Nested object that holds information about an Item
 		*/
 		struct ItemInfo {
-			std::string s_name;
-			int s_serialNumer;
-			bool s_filled;
-			ItemInfo() : s_name{ "" }, s_serialNumer{ 0 }, s_filled{false} {}
-		};
+			std::string s_itemName;
+			int s_serialNumer{0u};
+			bool s_filled{false};
+			ItemInfo(const std::string& src) : s_itemName(src) {};
+		}** ms_itemList{ nullptr };
 
-		ItemInfo* m_itemInfo;
-		std::string m_customerName;
-		std::string m_productName;
-		size_t m_itemsNum;
-		static size_t m_fieldWidth;
+		std::string m_customerName = "";
+		std::string m_productName = "";
+		unsigned int m_itemsNum;
+		static unsigned int m_fieldWidth;
+		Utilities mo_utility;
 
 	public:
 		CustomerOrder();
