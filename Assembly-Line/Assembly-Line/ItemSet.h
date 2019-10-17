@@ -24,7 +24,7 @@ namespace sict {
 
 	public:
 		ItemSet(const std::string&);
-		ItemSet(ItemSet&&); //???
+		ItemSet(ItemSet&&) noexcept;
 		ItemSet(const ItemSet&) = delete;
 		ItemSet& operator=(const ItemSet&) = delete;
 		ItemSet& operator=(ItemSet&&) = delete;

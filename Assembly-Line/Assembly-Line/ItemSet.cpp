@@ -54,7 +54,7 @@ namespace sict {
 	}
 
 	
-	ItemSet::ItemSet(ItemSet && other) {
+	ItemSet::ItemSet(ItemSet && other) noexcept {
 		if (this != &other)	{
 			m_name = other.m_name;
 			m_description = other.m_description;
