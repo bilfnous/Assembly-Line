@@ -19,9 +19,9 @@ namespace sict {
 
 	class Station {
 		
-		std::deque<CustomerOrder> m_stationCustomerOrders;
+		std::deque<CustomerOrder> m_stationCustomerOrders; // orders currently at this Station
 		std::string m_stationName;
-		ItemSet m_stationInventory;
+		ItemSet mo_stationInventory; // item stocked at this Station
 
 	public:
 		Station(const std::string&);
@@ -43,4 +43,3 @@ namespace sict {
 }
 
 #endif
-

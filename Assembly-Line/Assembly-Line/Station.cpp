@@ -11,36 +11,38 @@
 
 namespace sict {
 
-	Station::Station(const std::string& string) : m_stationInventory(string) {
-		m_stationName =  m_stationInventory.getName();
-	}
+	// constructor passes record to item subobject
+	Station::Station(const std::string& string) : mo_stationInventory(string) {}
 
 	void Station::display(std::ostream& os) const {
-		m_stationInventory.display(os);
+		mo_stationInventory.display(os);
 	}
 
 	void Station::fill(std::ostream& os) {
-		if (!m_stationCustomerOrders.empty())
-			m_stationCustomerOrders.front().fillItem(m_stationInventory, os);
+		if (!m_stationCustomerOrders.empty()) {
+			auto itr = m_stationCustomerOrders.begin();
+			if (!(*itr).isFilled()) {
+				(*itr).fillItem(mo_stationInventory, os);
+			}
+		}
 	}
-	
+
 	const std::string& Station::getName() const {
-		return m_stationInventory.getName();
+		return mo_stationInventory.getName();
 	}
 
 	bool Station::hasAnOrderToRelease() const {
 		bool hasOrder = false;
 		if (!m_stationCustomerOrders.empty()) {
-			if (!m_stationInventory.getQuantity())
-				hasOrder = true;
-			else
-				hasOrder = m_stationCustomerOrders.front().isItemFilled(m_stationName);
+			// order at the start of the queue
+			auto it = m_stationCustomerOrders.begin();
+			return (*it).isItemFilled(mo_stationInventory.getName()) || mo_stationInventory.getQuantity() == 0;
 		}
 		return hasOrder;
 	}
 
 	Station& Station::operator--() {
-		--m_stationInventory;
+		--mo_stationInventory;
 		return *this;
 	}
 
@@ -52,17 +54,19 @@ namespace sict {
 	bool Station::pop(CustomerOrder& ready) {
 		bool filled = false;
 		if (!m_stationCustomerOrders.empty()) {
-			filled = m_stationCustomerOrders.front().isItemFilled(m_stationName);
-			ready = std::move(m_stationCustomerOrders.front());
-			m_stationCustomerOrders.erase(m_stationCustomerOrders.begin());
+			auto it = m_stationCustomerOrders.begin();
+			bool isFilled = (*it).isFilled();
+			CustomerOrder order = std::move((*it));
+			m_stationCustomerOrders.pop_front();
+			ready = std::move(order);
 		}
 		return filled;
 	}
 
 	void Station::validate(std::ostream & os) const {
-		os << " getName(): " << m_stationInventory.getName() << std::endl;
-		os << " getSerialNumber(): " << m_stationInventory.getSerialNumber() << std::endl;
-		os << " getQuantity(): " << m_stationInventory.getQuantity() << std::endl;
+		os << " getName(): " << mo_stationInventory.getName() << std::endl;
+		os << " getSerialNumber(): " << mo_stationInventory.getSerialNumber() << std::endl;
+		os << " getQuantity(): " << mo_stationInventory.getQuantity() << std::endl;
 	}
 
 }
