@@ -15,25 +15,21 @@
 namespace sict {
 
 	class LineManager {
-		std::vector<Station*> m_stationAddresses;
-		std::deque<CustomerOrder> m_complete;
-		std::deque<CustomerOrder> m_incomplete;
-		std::deque<CustomerOrder> m_ordersToFill;
-		std::vector<size_t> m_indexNextStation;
-		size_t m_indexStartingStation;
-		size_t m_indexLastStation;
-		size_t m_orderSize;
-		std::vector<size_t> m_stationOrder;
 
-	private:
-		size_t createAssemblyOrder(std::vector<size_t>&, size_t);
+		std::vector<Station*> m_lineStationAddr;
+		std::vector<size_t> m_nextStation;
+		std::deque<CustomerOrder> m_ordersToFill; // Customer Orders to be filled
+		std::deque<CustomerOrder> m_complete;  // Customer Orders filled
+		std::deque<CustomerOrder> m_incomplete; // Customer Orders incomplete due to inventory shortage
+		const size_t m_customerOrders;          // number of Customer orders loaded
+		size_t m_lastStation;
+		const size_t m_startIndex;
 
 	public:
-		LineManager(std::vector<Station*>&, std::vector<size_t>&, std::vector<CustomerOrder>&, size_t, std::ostream&);
+		LineManager(std::vector<Station*>&, std::vector<size_t>&, std::vector<CustomerOrder>&, const size_t, std::ostream&);
 		void display(std::ostream&) const;
 		bool run(std::ostream&);
 	};
-
 }
 
 #endif
