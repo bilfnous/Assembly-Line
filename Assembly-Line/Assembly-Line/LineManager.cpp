@@ -10,27 +10,15 @@
 
 namespace sict {
 
-	LineManager::LineManager(std::vector<Station*>& stationAddresses, std::vector<size_t>& indexNextStation, std::vector<CustomerOrder>& customerOrders, size_t indexStartingStation, std::ostream& os)
-		: m_stationAddresses{ stationAddresses }, m_indexStartingStation{ indexStartingStation } {
-
-		for (auto& customerOrder : customerOrders)
-			m_ordersToFill.push_back(std::move(customerOrder));
-
-		m_indexLastStation = createAssemblyOrder(indexNextStation, indexStartingStation);
-
-		m_indexNextStation = indexNextStation;
-		m_orderSize = m_ordersToFill.size();
-	}
-
-	size_t LineManager::createAssemblyOrder(std::vector<size_t>& indexNextStation, size_t indexStartingStation) {
-		m_stationOrder.push_back(indexStartingStation);
-
-		for (size_t i = 0; i < indexNextStation.size(); ++i) {
-			m_stationOrder.push_back(indexNextStation[indexStartingStation]);
-			indexStartingStation = indexNextStation[indexStartingStation];
-		}
-
-		return m_stationOrder.back();
+	// constructor moves all orders into the toBeFilled queue and determines the last station
+	LineManager::LineManager(std::vector<Station*>& l, std::vector<size_t>& n, std::vector<CustomerOrder>& order, const size_t start, std::ostream& os)
+		: m_lineStationAddr(l), m_nextStation(n), m_customerOrders(order.size()), m_startIndex(start) {
+		// Move all customer orders into the toBeFilled queue
+		for (size_t x = 0; x < order.size(); x++)
+			m_ordersToFill.push_front(std::move(order[x]));
+		m_lastStation = start;
+		for (size_t i = 0; i < m_nextStation.size(); ++i)
+			if (m_nextStation[m_lastStation] < m_lineStationAddr.size()) m_lastStation = m_nextStation[m_lastStation];
 	}
 
 	void LineManager::display(std::ostream& os) const {
