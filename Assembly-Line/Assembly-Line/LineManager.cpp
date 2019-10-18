@@ -12,7 +12,7 @@ namespace sict {
 
 	LineManager::LineManager(std::vector<Station*>& stationAddresses, std::vector<size_t>& indexNextStation, std::vector<CustomerOrder>& customerOrders, size_t indexStartingStation, std::ostream& os)
 		: m_stationAddresses{ stationAddresses }, m_indexStartingStation{ indexStartingStation } {
-		
+
 		for (auto& customerOrder : customerOrders)
 			m_ordersToFill.push_back(std::move(customerOrder));
 
@@ -45,54 +45,39 @@ namespace sict {
 	}
 
 	bool LineManager::run(std::ostream& os) {
-		bool done = false;
-		CustomerOrder temp;
-
+		// if there is an incoming CustomerOrder add it to Station [startIndex]
 		if (!m_ordersToFill.empty()) {
-			*m_stationAddresses[m_indexStartingStation] += std::move(m_ordersToFill.front());
-			m_ordersToFill.pop_front();
+			*m_lineStationAddr[m_startIndex] += std::move(m_ordersToFill.back());
+			m_ordersToFill.pop_back();
 		}
 
-		try {
-			for (size_t i = 0; i != m_indexNextStation.size(); ++i)
-				m_stationAddresses[i]->fill(os);
+		// fill one customer order at each station
+		for (size_t x = 0; x < m_lineStationAddr.size(); x++) {
+			m_lineStationAddr[x]->fill(os);
+		}
 
-			for (size_t i = 0; i < m_stationAddresses.size(); ++i) {
-				bool hasOrderForRelease = m_stationAddresses[i]->hasAnOrderToRelease();
-				bool isTheLastStation = m_indexNextStation[i] == m_indexLastStation;
-
-				if (hasOrderForRelease && isTheLastStation) {
-					m_stationAddresses[i]->pop(temp);
-
-					if (temp.isFilled()) {
-						os << " --> " << temp.getNameProduct() << " moved from " << m_stationAddresses[i]->getName() << " to Completed Set" << std::endl;
-						m_complete.push_back(std::move(temp));
-						m_orderSize--;
-					}
-					else {
-						os << " --> " << temp.getNameProduct() << " moved from " << m_stationAddresses[i]->getName() << " to Incompleted Set" << std::endl;
-						m_incomplete.push_back(std::move(temp));
-						m_orderSize--;
-					}
+		// move customer orders forward
+		for (size_t i = 0; i < m_lineStationAddr.size(); ++i) {
+			if (m_lineStationAddr[i]->hasAnOrderToRelease()) {
+				CustomerOrder order;
+				bool complete = m_lineStationAddr[i]->pop(order);
+				os << " --> " << order.getNameProduct() << " moved from " << m_lineStationAddr[i]->getName() << " to ";
+				if (i != m_lastStation) {
+					os << m_lineStationAddr[m_nextStation[i]]->getName() << std::endl;
+					*m_lineStationAddr[m_nextStation[i]] += std::move(order);
 				}
-				if (hasOrderForRelease && !isTheLastStation) {
-					m_stationAddresses[i]->pop(temp);
-					os << " --> " << temp.getNameProduct() << " moved from " << m_stationAddresses[i]->getName() << " to " << m_stationAddresses[m_indexNextStation[i]]->getName() << std::endl;
-
-					*m_stationAddresses[m_indexNextStation[i]] += std::move(temp);
+				else if (complete) {
+					os << "Completed Set" << std::endl;
+					m_complete.push_back(std::move(order));
+				}
+				else {
+					os << "Incomplete Set" << std::endl;
+					m_incomplete.push_back(std::move(order));
 				}
 			}
 		}
-		catch (const std::exception& e) {
-			e.what();
-		}
 
-		if (m_orderSize == 0)
-			done = true;
-		else
-			done = false;
-
-		return done;
+		return (m_complete.size() + m_incomplete.size()) == m_customerOrders;
 	}
 
 }
