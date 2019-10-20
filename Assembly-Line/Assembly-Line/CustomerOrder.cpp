@@ -14,6 +14,8 @@ namespace sict {
 
 	unsigned int CustomerOrder::m_fieldWidth{0u};
 
+	CustomerOrder::CustomerOrder() {}
+
 	CustomerOrder::CustomerOrder(const std::string& record) {
 		if (!record.empty()) {
 			size_t next_pos = 0;
