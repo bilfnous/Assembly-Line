@@ -20,7 +20,6 @@ namespace sict {
 	class Station {
 		
 		std::deque<CustomerOrder> m_stationCustomerOrders; // orders currently at this Station
-		std::string m_stationName;
 		ItemSet mo_stationInventory; // item stocked at this Station
 
 	public:
